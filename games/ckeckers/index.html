@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Damier CSS/HTML pour dames</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <section class="hero-card">
+        <p class="eyebrow">Interface graphique</p>
+        <h1>Plateau de dames en HTML & CSS</h1>
+        <p class="lead">
+          Voici une version visuelle simple, élégante et prête à enrichir ton script de jeu.
+        </p>
+        <ul class="feature-list">
+          <li>Damier 8 × 8 avec couleurs contrastées</li>
+          <li>Pions stylés avec surbrillance au clic</li>
+          <li>Affichage de l’état actuel du plateau</li>
+        </ul>
+      </section>
+
+      <section class="board-card">
+        <header class="board-header">
+          <div>
+            <p class="eyebrow">État</p>
+            <h2>Tour actuel</h2>
+          </div>
+          <button id="resetBtn" class="ghost-btn" type="button">Réinitialiser</button>
+        </header>
+
+        <div class="status-row">
+          <span id="turnLabel" class="pill pill-accent">Joueur : Blanc</span>
+          <span id="moveLabel" class="pill">Déplacements possibles affichés</span>
+        </div>
+
+        <div id="board" class="board" aria-label="Plateau de dames"></div>
+
+        <p id="hint" class="hint-text">
+          Cliquez sur une pièce blanche ou noire pour voir ses déplacements possibles.
+        </p>
+      </section>
+    </main>
+
+    <script type="module" src="./script.js"></script>
+  </body>
+</html>
