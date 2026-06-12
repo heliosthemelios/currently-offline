@@ -1,0 +1,31 @@
+# Fichiers de configuration locale / secrets
+abonnement.php
+
+# Dépendances locales et modules lourds
+node_modules/
+vendor/
+
+# Builds, caches et artefacts
+/dist/
+/build/
+/.cache/
+/.parcel-cache/
+/coverage/
+
+# Fichiers de moteur / modules volumineux
+*.wasm
+*.wasm.map
+*.min.js
+
+# Logs et fichiers temporaires
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+*.tmp
+*.temp
+
+# Mac / IDE metadata
+.DS_Store
+.vscode/
+.idea/

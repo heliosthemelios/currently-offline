@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Mon Jeu d'Échecs - Rétro Style</title>
+    <link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
+    <script src="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"></script>
+    <style>
+        body { width: auto; margin: 50px; background: rgb(6, 14, 36); font-family: 'Pixelify Sans', sans-serif; border-bottom: 5px solid orange; color: white; display: flex; flex-direction: column; align-items: center; }
+        header { background-image: url('../../assets/images/baniere.png'); background-color: orange; background-size: cover; background-position: center center; background-repeat: no-repeat; width:100%; height: 300px; display: flex; border-bottom: 3px solid rgb(240, 142, 14); border-top-left-radius: 50px; border-top-right-radius: 50px; }
+        #section-1 { background: rgb(8, 8, 105); width: 100%; display: flex; flex-direction: column; text-align: center; align-items: center; }
+        #section-2 { background: rgb(8, 8, 105); width: 100%; display: flex; flex-direction: column; text-align: center; align-items: center; margin-bottom: 60px; border-bottom: 5px solid orange; border-bottom-left-radius: 15px; border-bottom-right-radius: 15px; }
+        .lien { background-color: rgb(6, 49, 96); background-size: cover; background-position: center center; background-repeat: no-repeat; margin-left: 60px; width:600px; display: flex; flex-direction: column; align-items: center; border: 5px solid black; border-radius: 40px; }
+        .info-panel { display: center; background-color: rgb(6, 49, 96); color: orange; padding: 15px 30px; border: 3px solid orange; border-radius: 20px; margin: 20px; font-size: 1.5rem; }
+        #myBoard { border: 5px solid orange; border-radius: 10px; }
+        footer { background-color: rgb(6, 49, 96); display: flex; justify-content: center; width: 100%; padding: 20px; border-top: 5px solid orange; border-top-left-radius: 15px; border-top-right-radius: 15px; }
+        h1, h2 { color: orange; }
+        a { color: orange; text-decoration: none; }
+        .white-1e1d7 { background-color: #d1d8e0 !important; }
+        .black-3c85d { background-color: #063160 !important; }
+        .highlight-white { background-color: #ff9f43 !important; }
+    </style>
+</head>
+<body>
+    <header></header>
+    <div id="section-1">
+        <div class="info-panel" id="status">Tour des Blancs</div>
+        <div id="myBoard" style="width: 400px"></div>
+    </div>
+    <div id="section-2">
+        <h2>Commandes</h2>
+        <p>Déplacez vos pièces pour défier Stockfish !</p>
+    </div>
+    <footer>
+         <p id="contact">contact: <a href="mailto:beric3069@gmail.com">Me contacter</a></p>
+    </footer>
+<script>
+var board = null;
+var game = new Chess();
+var $status = $('#status');
+var engine = new Worker('stockfish-18.js');
+engine.onmessage = function(event) {
+    var message = event.data;
+    if (message.startsWith('bestmove')) {
+        var match = message.match(/^bestmove ([a-h][1-8])([a-h][1-8])([qrbn])?/);
+        if (match) {
+            game.move({ from: match[1], to: match[2], promotion: match[3] || 'q' });
+            board.position(game.fen());
+            updateStatus();
+        }
+    }
+};
+engine.postMessage('uci');
+function demanderAStockfish() {
+    if (game.game_over()) return;
+    engine.postMessage('position fen ' + game.fen());
+    engine.postMessage('go depth 10');
+}
+function onDragStart (source, piece, position, orientation) {
+  if (game.game_over()) return false;
+  if (game.turn() === 'b') return false;
+  if ((game.turn() === 'w' && piece.search(/^b/) !== -1) || (game.turn() === 'b' && piece.search(/^w/) !== -1)) return false;
+}
+function onDrop (source, target) {
+  var move = game.move({ from: source, to: target, promotion: 'q' });
+  if (move === null) return 'snapback';
+  updateStatus();
+}
+function onSnapEnd () {
+  board.position(game.fen());
+  if (!game.game_over()) {
+      window.setTimeout(function() { demanderAStockfish(); }, 250);
+  }
+}
+function updateStatus () {
+  var status = (game.turn() === 'b') ? 'Tour des Noirs' : 'Tour des Blancs';
+  if (game.in_checkmate()) status = 'Échec et mat !';
+  else if (game.in_draw()) status = 'Match nul !';
+  else if (game.in_check()) status += ', ÉCHEC !';
+  $status.html(status);
+}
+var config = {
+  draggable: true,
+  position: 'start',
+  pieceTheme: '../../assets/images/img_chess/{piece}.png',
+  onDragStart: onDragStart,
+  onDrop: onDrop,
+  onSnapEnd: onSnapEnd
+}
+board = Chessboard('myBoard', config);
+updateStatus();
+</script>
+</body>
+</html>
+
